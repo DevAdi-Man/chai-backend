@@ -18,7 +18,7 @@ const userSchema = new Schema(
       trim: true,
       index: true
     },
-    fullname: {
+    fullName: {
       type: String,
       required: true,
       trim: true,
@@ -41,7 +41,7 @@ const userSchema = new Schema(
       type: String,
       required: [true, 'Password is required']
     },
-    refrenshToken: {
+    refreshToken: {
       type: String
     }
   },
@@ -53,7 +53,7 @@ const userSchema = new Schema(
 userSchema.pre('save',async function (next) {
   if (!this.isModified('password')) return next();
 
-  this.password = bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 })
 
