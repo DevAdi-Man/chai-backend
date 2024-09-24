@@ -235,6 +235,8 @@ const updateUserDetail = asyncHandler(async (req, res) => {
     throw new ApiError(400,"all deatila are reqiured")
   }
 
+  // console.log(fullName,email)
+
   const user = await User.findByIdAndUpdate(
     req.body?._id,
     {
