@@ -28,4 +28,15 @@ const uploadOnCloudinary = async (localFilePath) => {
   }
 }
 
-export {uploadOnCloudinary}
+const deleteFromCloudinary = async (oldurl) => {
+  const publicId = extractPublicIdFromUrl(oldurl); // You'll need a function to extract public ID from Cloudinary URL
+  await cloudinary.uploader.destroy(publicId);
+}
+
+const extractPublicIdFromUrl = (url) => {
+  const parts = url.split('/');
+  const publicIdWithExtension = parts[parts.length - 1];
+  return publicIdWithExtension.split('.')[0]; // Removes the file extension
+};
+
+export {uploadOnCloudinary,deleteFromCloudinary}

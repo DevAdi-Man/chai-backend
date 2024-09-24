@@ -264,7 +264,16 @@ const updateUserAvtar = asyncHandler(async (req, res) => {
     throw new ApiError(400,"Error while uplading file")
   }
 
-  const user = await User.findByIdAndUpdate(
+  const user = await User.findById(req.user?._id)
+
+  if (!user) {
+    throw new ApiError(400, "user does not exist")
+  }
+
+  const oldAvatar = user.avatar //storing old avatar
+
+
+  const updatedUser = await User.findByIdAndUpdate(
     req.user?._id,
     {
       $set: {
@@ -276,7 +285,11 @@ const updateUserAvtar = asyncHandler(async (req, res) => {
     }
   ).select("-password")
 
-  return res.status(200).json(new ApiResponse(200,user,"Avatar image update successful"))
+  if (oldAvatar) {
+    await deleteFromCloudinary(oldAvatar)
+  }
+
+  return res.status(200).json(new ApiResponse(200,updatedUser,"Avatar image update successful"))
 })
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
@@ -287,13 +300,19 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
   }
 
   const coverImage = await uploadOnCloudinary(CoverImageLoaclPath)
-  
 
   if (!coverImage.url) {
     throw new ApiError(400,"Error while uplading file")
   }
 
-  const user = await User.findByIdAndUpdate(
+  const user = await User.findById(req.user?._id)
+  if (!user) {
+    throw new ApiError(400,"user does not exist ")
+  }
+
+  const oldCoverImage = user.coverImage
+
+  const updateUser = await User.findByIdAndUpdate(
     req.user?._id,
     {
       $set: {
@@ -305,7 +324,11 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     }
   ).select("-password")
 
-  return res.status(200).json(new ApiResponse(200,user,"Avatar image update successful"))
+  if (oldCoverImage) {
+    await deleteFromCloudinary(oldCoverImage)
+  }
+
+  return res.status(200).json(new ApiResponse(200,updateUser,"Avatar image update successful"))
 })
 
 
