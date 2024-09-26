@@ -269,7 +269,7 @@ const updateUserDetail = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200,user,"Account details updated succfully"))
 })
 
-//geting error
+//geting error here
 const updateUserAvtar = asyncHandler(async (req, res) => {
   const avatarLoaclPath = req.file?.path
 
