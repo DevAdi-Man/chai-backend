@@ -22,21 +22,30 @@ const uploadOnCloudinary = async (localFilePath) => {
     fs.unlinkSync(localFilePath)
     return response
   } catch (error) {
+    console.error("Error uploading to Cloudinary:", error); 
     fs.unlinkSync(localFilePath)
     // remove the locally saved temporary file as the upload operation got failed
     return null
   }
 }
 
-const deleteFromCloudinary = async (oldurl) => {
-  const publicId = extractPublicIdFromUrl(oldurl); // You'll need a function to extract public ID from Cloudinary URL
-  await cloudinary.uploader.destroy(publicId);
-}
+// Delete file from Cloudinary
+const deleteFromCloudinary = async (oldUrl) => {
+  const publicId = extractPublicIdFromUrl(oldUrl); // Extract public ID from the URL
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+    console.log("Deleted from Cloudinary:", result); // Log the result of deletion
+    return result;
+  } catch (error) {
+    console.error("Error deleting from Cloudinary:", error); // Log error for debugging
+  }
+};
 
+// Extract public ID from Cloudinary URL
 const extractPublicIdFromUrl = (url) => {
   const parts = url.split('/');
   const publicIdWithExtension = parts[parts.length - 1];
-  return publicIdWithExtension.split('.')[0]; // Removes the file extension
+  return publicIdWithExtension.split('.')[0]; // Returns the public ID without the extension
 };
 
 export {uploadOnCloudinary,deleteFromCloudinary}

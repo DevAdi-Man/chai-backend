@@ -102,6 +102,9 @@ const loginUser = asyncHandler(async (req, res) => {
     $or : [{username},{email}]
   })
 
+  console.log("==>user : ",user);
+  
+
   if (!user) {
     throw new ApiError(404,"User does not exist ")
   }
@@ -154,6 +157,9 @@ const logoutUser = asyncHandler(async (req, res) => {
     secure:true
   }
 
+  console.log("User is log out");
+  
+
   return res
     .status(200)
     .clearCookie("accessToken", option)
@@ -162,7 +168,9 @@ const logoutUser = asyncHandler(async (req, res) => {
 })
 
 const refreshAccessToken = asyncHandler(async(req,res)=>{
-  const incomingRefreshToken = req.cookie.refreshToken || req.body.refreshToken
+  const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+
+  // console.log("===> incomingRefreshToken : ",incomingRefreshToken)
 
   if (!incomingRefreshToken) {
     throw new ApiError(401,"unauthorized request")
@@ -190,6 +198,9 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
     }
 
     const { accessToken, newRefreshToken } = await generateAccessAndRefreshToken(user._id)
+
+    // console.log(`===>accessToken ${accessToken} ===>newRefreshToken ${newRefreshToken} ==> option ${option}`);
+    
     
     return res
       .cookie("accessToken", accessToken, option)
@@ -208,6 +219,8 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body
+
+  console.log(`oldPassword ==> ${oldPassword} newPassword ==> ${newPassword}`)
   
   const user = await User.findById(req.user?._id)
   const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
@@ -215,6 +228,8 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     throw new ApiError(400,"Invalid Password")
   }
 
+  console.log("is password is  : ",isPasswordCorrect);
+  
   user.password = newPassword
   await user.save({ validateBeforeSave: true })
   
@@ -224,6 +239,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 })
 
 const getCurrentUser = asyncHandler(async (req, res) => {
+  // console.log("current user")
   return res
     .status(200)
     .json(new ApiResponse(200,req.user,"user fetch succesful"))
@@ -236,7 +252,7 @@ const updateUserDetail = asyncHandler(async (req, res) => {
     throw new ApiError(400,"all deatila are reqiured")
   }
 
-  // console.log(fullName,email)
+  console.log(fullName,email)
 
   const user = await User.findByIdAndUpdate(
     req.body?._id,
@@ -253,6 +269,7 @@ const updateUserDetail = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200,user,"Account details updated succfully"))
 })
 
+//geting error
 const updateUserAvtar = asyncHandler(async (req, res) => {
   const avatarLoaclPath = req.file?.path
 
@@ -261,6 +278,8 @@ const updateUserAvtar = asyncHandler(async (req, res) => {
   }
 
   const avatar = await uploadOnCloudinary(avatarLoaclPath)
+
+  console.log("Avatar ",avatar)
   
 
   if (!avatar.url) {
@@ -274,6 +293,7 @@ const updateUserAvtar = asyncHandler(async (req, res) => {
   }
 
   const oldAvatar = user.avatar //storing old avatar
+  console.log("oldavtar",oldAvatar)
 
 
   const updatedUser = await User.findByIdAndUpdate(
