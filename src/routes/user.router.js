@@ -25,6 +25,6 @@ router.route("/logout").post(verifyJWT, logoutUser)
 router.route("/refresh-token").post(refreshAccessToken)
 
 // router.route("/updateUserDetail").post(updateUserDetail)
- router.route("/getUserChannelProfile").post(getUserChannelProfile)
+//  router.route("/getUserChannelProfile").post(getUserChannelProfile)
 
 export default router;
