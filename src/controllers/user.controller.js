@@ -30,7 +30,6 @@ const registerUser = asyncHandler(async (req, res) => {
   // console.log("password : ", password);
   // console.log("res body : ",res.body);
   
-  
   //eha pe hum agla-alag kr ke bhe kr skte the like email check or username etc.. ke name khali chhodh rakha hai y nhi 
   if ([fullName, email, username, password].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "all fields are required");
@@ -84,14 +83,13 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 
-
 const loginUser = asyncHandler(async (req, res) => {
   // req body se -> data
   // username or email
   // find the user (means database mai check kr ke dekhe ge ke hai ya nhi)
-  // password  check 
+  // password  check
   // access and refresh token (generate)
-  // send cookies 
+  // send cookies
   
   const { email, username, password } = req.body
   if (!username && !email) {
@@ -101,19 +99,28 @@ const loginUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({
     $or : [{username},{email}]
   })
+ 
+  console.log("user req.body_id is : ",req.body)
+
 
   console.log("==>user : ",user);
   
 
   if (!user) {
+
     throw new ApiError(404,"User does not exist ")
   }
+
+  console.log("User test 1 ");
+  
 
   const isPasswordValid = await user.isPasswordCorrect(password)
 
   if (!isPasswordValid) {
     throw new ApiError(401,"Password is wrong ")
   }
+
+  console.log("test 2")
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id)
   
